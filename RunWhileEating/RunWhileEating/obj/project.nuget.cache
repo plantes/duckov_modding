@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "4pnJAz3WRJE=",
+  "success": true,
+  "projectFilePath": "E:\\work\\0duckov_modding\\RunWhileEating\\RunWhileEating\\RunWhileEating.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Administrator\\.nuget\\packages\\lib.harmony\\2.4.1\\lib.harmony.2.4.1.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\lib.harmony.ref\\2.4.1\\lib.harmony.ref.2.4.1.nupkg.sha512",
+    "C:\\Users\\Administrator\\.nuget\\packages\\system.reflection.emit\\4.7.0\\system.reflection.emit.4.7.0.nupkg.sha512"
+  ],
+  "logs": []
+}

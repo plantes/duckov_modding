@@ -1,132 +1,154 @@
-# Duckov Modding 示例
+# HeadshotTip - 爆头击杀鼓励提示
 
-_《逃离鸭科夫》的 mod 示例说明。_
+每次爆头击杀敌人时，在敌人头上显示随机鼓励文字的 Mod。
 
-中文 | [English](README_EN.md) | [한국어](README_KO.md)
+![Preview](HeadshotTip/ReleaseExample/HeadshotTip/preview.png)
 
-[值得注意的 API](Documents/NotableAPIs_CN.md)
+## 功能特性
 
-## 关于Harmony
+- ✅ 爆头击杀时自动显示气泡对话框
+- ✅ 随机显示鼓励文字（"三爷好棒"、"三爷V5"、"三爷牛逼"等）
+- ✅ 可通过配置文件自定义文字列表
+- ✅ 可调整显示时长和位置
 
-游戏目前没有内置 Harmony。观察到同时加载不同版本 Harmony 时会有冲突。可以参考社区中比较流行的 Harmony 来进行开发，比如撰写此文时最新的2.4.1版本。
+## 安装方法
 
-## 工作原理概述
+### 方式一：Steam 创意工坊（推荐）
+1. 在 Steam 创意工坊中订阅此 Mod
+2. 启动游戏，在主菜单的 "Mods" 中启用
 
-《逃离鸭科夫》的 Mod 系统会自动扫描并读取 Duckov_Data/Mods 文件夹，以及从 Steam 创意工坊中订阅的物品文件夹。当扫描发现这些文件夹中包含有特定的 dll 文件、info.ini 和 preview.png 文件，那么就能够在游戏的 Mods 菜单中管理并加载 mod。
-注意：mac系统的相关文件夹位于 Duckov/Duckov.app/**Contents/Mods/**。
+### 方式二：手动安装
+1. 下载 `HeadshotTip` 文件夹
+2. 将整个文件夹复制到游戏目录：
+   - Windows: `{游戏目录}\Duckov_Data\Mods\`
+   - macOS: `{游戏目录}/Duckov.app/Contents/Mods/`
+3. 启动游戏，在 Mods 菜单中启用
 
-### 规则一
-游戏会读取 mod 文件夹的 info.ini 中的 **name** 参数，并以此作为 namespace 尝试加载名为 ModBehaviour 的类。例如，info.ini 中存放有`name=MyMod`，则会加载`MyMod.dll`文件中的`MyMod.ModBehaviour`。
+## 配置说明
 
-### 规则二
-mod 的 ModBehaviour 类应继承自 **Duckov.Modding.ModBehaviour**，这是一个继承自 Unity 的 MonoBehaivour 的类，其中包含了一些 mod 系统中需要使用的额外功能。在加载 mod 时，《逃离鸭科夫》会创建一个该 mod 的 GameObject，并通过调用 GameObject.AddComponent(Type) 的方式创建一个 ModBehaviour 的实例。Mod 作者可以通过编写 ModBehaviour 的 Start\Update 等 Unity 事件实现自定义功能，也可以通过注册《逃离鸭科夫》中的其他事件实现自定义功能。
+Mod 文件夹中的 `config.json` 可以自定义设置：
 
-## Mod 文件夹结构
-
-将准备好的 Mod 文件夹放到《逃离鸭科夫》本体的 Duckov_Data/Mods 中，即可在游戏主界面的 Mods 界面加载该 Mod。
-以上面的 “MyMod” 为例，发布的文件结构应该如下：
-
-- MyMod（mod 的文件夹）
-  - MyMod.dll（mod的自定义的功能逻辑）
-  - info.ini（重要，mod的配置文件）
-  - preview.png（正方形的预览图，建议分辨率 `256*256`）
-
-[Mod 文件夹示例](DisplayItemValue/ReleaseExample/DisplayItemValue/)
-
-### info.ini 详情
-
-本配置文件应包含以下参数（不建议存放其他的额外数据）：
-
-- name（mod 名称，主要用于加载 dll 文件。详情见上面的 _规则一_）
-- displayName（显示的名称）
-- description（显示的描述）
-- publishedFileId（_可能包含_。本 Mod 在 steam 创意工坊的 id）
-- tags (在创意工坊中显示的Tag, 使用逗号分隔)
-
-**注意：在上传 Steam Workshop 的时候，会复写 info.ini。配置文件中部分数据可能会因此丢失。所以不建议在 info.ini 中存储除以上项目之外的其他信息。**
-
-#### Tags可以使用的参数
-
-- Weapon
-- Equipment & Gear
-- Loot & Economy
-- Quality of Life
-- Cheats & Exploits
-- Visual Enhancements
-- Sound
-- Quest & Progression
-- Companion & NPC
-- Collectibles
-- Gameplay
-- Multiplayer & Co-op
-- Utility
-- Medical & Survival
-- 
-## 配置 C# 工程
-
-**注意：在上传 Steam Workshop 的时候，会复写 info.ini。info.ini 中原有的信息可能会因此丢失。所以不建议在 info.ini 中存储除以上项目之外的其他信息。**
-
-## 配置 C# 工程 / Configuring C# Project
-
-1. 在电脑上准备好《逃离鸭科夫》本体。
-2. 通过 Visual Studio 软件创建一个 .Net 类库（Class Library）。
-3. 配置工程参数。
-   1) 框架（Target Framework）
-      - **TargetFramework 建议设置为 .Net Standard 2.1**。
-      - 注意删除 TargetFramework 不支持的功能，比如`<ImplicitUsings>`
-   2) 添加引用（Reference Include）
-      - 将《逃离鸭科夫》的`\Duckov_Data\Managed\*.dll`添加到引用中。
-      - 示例：
-      ```
-        <ItemGroup>
-          <Reference Include="$(DuckovPath)\Duckov_Data\Managed\TeamSoda.*" />
-          <Reference Include="$(DuckovPath)\Duckov_Data\Managed\ItemStatsSystem.dll" />
-          <Reference Include="$(DuckovPath)\Duckov_Data\Managed\Unity*" />
-        </ItemGroup>
-      ```
-
-4. 工程配置完成！现在在你 Mod 工程的 Namespace 中编写一个 ModBehaivour 的类。
-5. 构建工程，即可得到你的 mod 的主要 dll。然后按照上述规则说明整理好文件夹结构，即可开始本地测试。
-
-[csproj 文件示例](DisplayItemValue/DisplayItemValue.csproj)
-
-注意：如果碰到 .csproj 下的文件路径无法被识别问题时，可用第三方IDE（如 VS Code）打开文件，将文件编码从 UTF-8 with BOM 改为 UTF-8（无 BOM）并重新保存，再用 Visual Studio 打开就应该正常了。
-
-## 其他
-
-### Unity Package
-
-使用 Unity 进行开发时，可以参考本仓库附带的 [manifest.json 文件](UnityFiles/manifest.json) 来选择 package。
-
-### 自定义游戏物品
-
-```
-// 添加自定义物品
-ItemStatsSystem.ItemAssetsCollection.AddDynamicEntry(Item prefab)
-
-// 移除自定义物品
-ItemStatsSystem.ItemAssetsCollection.RemoveDynamicEntry(Item prefab)
+```json
+{
+  "enabled": true,          // 是否启用 Mod
+  "duration": 2.0,          // 对话框显示时长（秒）
+  "yOffset": 1.5,           // 对话框垂直偏移（相对敌人位置）
+  "messages": [             // 自定义鼓励文字列表
+    "三爷好棒",
+    "三爷V5",
+    "三爷牛逼"
+  ]
+}
 ```
 
-- 自定义物品的 prefab 上需要配置好 TypeID。该 ID 应避免与游戏本体、其他 MOD 冲突。
-- 进入游戏时如果未加载对应 MOD，存档中的自定义物品会直接消失。
+修改配置后重启游戏生效。
 
-### 本地化
+## 开发状态
 
+⚠️ **当前为初始版本，需要进一步开发**
+
+### 已完成
+- ✅ 项目结构和配置系统
+- ✅ 气泡对话框显示逻辑
+- ✅ 配置文件读取和管理
+- ✅ Harmony 框架集成
+
+### 待完成
+- ⏳ 爆头击杀事件检测（需要反编译游戏代码）
+- ⏳ 实际游戏测试和调试
+- ⏳ 预览图制作
+
+### 下一步开发
+
+1. **反编译游戏 DLL**
+   - 使用 ILSpy 或 dnSpy 打开 `{游戏目录}\Duckov_Data\Managed\TeamSoda.*.dll`
+   - 查找以下相关内容：
+     - `CharacterMainControl` 类的死亡相关方法
+     - `Health` 或 `DamageSystem` 类
+     - 伤害信息结构（是否包含爆头标识）
+
+2. **修改 Harmony Patch**
+   - 在 `ModBehaviour.cs` 中取消注释对应的 Patch
+   - 根据实际方法签名调整参数
+   - 添加爆头检测逻辑
+
+3. **编译和测试**
+   ```bash
+   # 在 headshot _tip 目录下
+   dotnet build HeadshotTip.sln
+   ```
+
+4. **部署测试**
+   - 将 `ReleaseExample/HeadshotTip/` 复制到游戏 Mods 目录
+   - 启动游戏测试功能
+   - 查看日志：`AppData\LocalLow\TeamSoda\Duckov\Player.log`
+
+## 开发说明
+
+### 项目结构
 ```
-// 覆盖本地化文本
-SodaCraft.Localizations.LocalizationManager.SetOverrideText(string key, string value)
-
-// 处理语言切换时的逻辑
-SodaCraft.Localizations.LocalizationManager.OnSetLanguage:System.Action<SystemLanguage>
+headshot _tip/
+├── HeadshotTip/
+│   ├── ModBehaviour.cs          # 主逻辑和 Harmony Patches
+│   ├── ConfigManager.cs         # 配置管理
+│   ├── HeadshotTip.csproj       # 项目配置
+│   └── ReleaseExample/
+│       └── HeadshotTip/
+│           ├── HeadshotTip.dll  # 编译输出（自动生成）
+│           ├── info.ini          # Mod 元数据
+│           ├── config.json       # 用户配置
+│           └── preview.png       # 预览图（待添加）
+└── HeadshotTip.sln              # 解决方案文件
 ```
 
-## 鸭科夫社区准则
+### 依赖库
+- **0Harmony (v2.4.1)** - 运行时方法 Hook
+- **Newtonsoft.Json (v13.0.3)** - JSON 配置解析
+- **游戏 DLL** - TeamSoda.*, Unity*, ItemStatsSystem.dll
 
-为了鸭科夫社区的长期健康与和谐发展，我们需要共同维护良好的创作环境。 因此，我们希望大家遵守以下规则：
-1. 禁止违反开发组以及 Steam平台所在地区法律的内容，禁止涉及政治、散布淫秽色情、宣扬暴力恐怖的内容。
-2. 禁止严重侮辱角色或者扭曲剧情、意图在玩家社群内容引起反感和制造对立的内容，或者涉及到热门时事与现实人物等容易引发现实争议的内容。
-3. 禁止未经授权，使用受版权保护的游戏资源或其他第三方素材的内容。
-4. 禁止利用 Mod 引导至广告、募捐等商业或非官方性质的外部链接，或引导他人付费的行为。
-5. 使用AI内容的 Mod 需要标注。  
-对于在 Steam创意工坊发布的 Mod，如果违反上述规则，我们可能会在不事先通知的情况下直接删除，并可能封禁相关创作者的权限。
+### 修改配置路径
+
+如果你的游戏安装在不同位置，修改 `HeadshotTip.csproj` 中的 `DuckovPath`：
+
+```xml
+<!-- Windows -->
+<DuckovPath>你的游戏路径</DuckovPath>
+
+<!-- macOS -->
+<DuckovPath Condition="'$(IsMac)'">你的游戏路径</DuckovPath>
+```
+
+## 调试技巧
+
+1. **查看日志**
+   - Windows: `C:\Users\{用户名}\AppData\LocalLow\TeamSoda\Duckov\Player.log`
+   - macOS: `~/Library/Logs/TeamSoda/Duckov/Player.log`
+
+2. **启用测试模式**
+   - 在 `ModBehaviour.cs` 中取消注释测试 Patch
+   - 游戏中按 `F8` 键触发测试提示
+
+3. **常见问题**
+   - Mod 未显示：检查文件夹名称是否与 info.ini 中的 name 一致
+   - 编译失败：检查 DuckovPath 是否正确
+   - 运行时错误：查看 Player.log 中的错误堆栈
+
+## 技术参考
+
+- [游戏 Mod 开发文档](../0template/API_Reference.md)
+- [Harmony 文档](https://harmony.pardeike.net/)
+- [游戏 API 参考](../0template/Documents/NotableAPIs_CN.md)
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 许可
+
+本 Mod 仅供学习交流使用，请遵守游戏社区规则。
+
+---
+
+**作者**: 三爷
+**版本**: v0.1.0 (开发中)
+**更新日期**: 2025-11-27

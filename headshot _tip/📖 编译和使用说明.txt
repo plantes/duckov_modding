@@ -1,0 +1,95 @@
+====================================
+  HeadshotTip Mod 编译和使用说明
+====================================
+
+🚀 超简单！只需 2 步：
+
+第 1 步：一键编译
+-----------------
+双击运行：一键编译.bat
+
+脚本会自动：
+✓ 查找 Visual Studio
+✓ 还原 NuGet 包
+✓ 清理旧输出
+✓ 编译项目
+✓ 验证输出文件
+
+第 2 步：复制到游戏
+-----------------
+方式 A（推荐）：
+1. 编辑 deploy.bat，修改第 8 行游戏路径
+2. 双击运行 deploy.bat
+
+方式 B（手动）：
+1. 复制文件夹：HeadshotTip\ReleaseExample\HeadshotTip
+2. 粘贴到：{游戏目录}\Duckov_Data\Mods\
+
+====================================
+
+📦 编译后的文件位置：
+HeadshotTip\ReleaseExample\HeadshotTip\
+
+应包含：
+✓ HeadshotTip.dll
+✓ 0Harmony.dll
+✓ Newtonsoft.Json.dll
+✓ config.json
+✓ info.ini
+✓ preview.png
+
+====================================
+
+🎮 游戏中使用：
+1. 启动游戏
+2. 主菜单 → Mods
+3. 找到"爆头击杀鼓励提示"并启用
+4. 重启游戏
+5. 游戏中按 F8 或 F9 测试
+
+====================================
+
+⚙️ 测试按键：
+F8  - 在玩家位置测试气泡
+F9  - 在瞄准目标测试气泡
+F10 - 显示当前配置（日志）
+
+====================================
+
+🐛 常见问题：
+
+Q: 编译失败，提示找不到 MSBuild
+A: 确认已安装 Visual Studio
+   包含 .NET 桌面开发组件
+
+Q: 编译失败，提示找不到 TeamSoda
+A: 检查游戏路径配置
+   编辑 HeadshotTip\HeadshotTip.csproj
+   第 10 行的 DuckovPath
+
+Q: Mod 不显示在游戏中
+A: 检查文件夹名称是否为 HeadshotTip
+   检查是否包含所有必需文件
+
+Q: 按键没反应
+A: 查看日志确认 Mod 是否加载
+   日志位置：
+   %USERPROFILE%\AppData\LocalLow\TeamSoda\Duckov\Player.log
+
+====================================
+
+📚 详细文档：
+- START_HERE.md - 快速入门
+- 使用指南.md - 完整手册
+- Visual_Studio_编译指南.md - 编译详解
+
+====================================
+
+💡 提示：
+- 修改代码后需要重新编译
+- 修改 config.json 后需要重启游戏
+- 查看日志可运行：view-logs.bat
+
+====================================
+
+祝你使用愉快！ 🎮

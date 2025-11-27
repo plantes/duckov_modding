@@ -1,0 +1,265 @@
+using System;
+using UnityEngine;
+using HarmonyLib;
+using Duckov.UI.DialogueBubbles;
+using Cysharp.Threading.Tasks;
+
+namespace HeadshotTip
+{
+    /// <summary>
+    /// HeadshotTip Mod 主类
+    /// 功能：每次爆头击杀敌人时，在敌人头上显示随机鼓励文字
+    /// </summary>
+    public class ModBehaviour : Duckov.Modding.ModBehaviour
+    {
+        private Harmony harmony;
+        private ConfigManager configManager;
+        private const string HARMONY_ID = "com.sanye.headshotTip";
+
+        void Awake()
+        {
+            Debug.Log("=== HeadshotTip Mod 已加载 ===");
+
+            try
+            {
+                // 初始化配置管理器
+                configManager = new ConfigManager();
+                Debug.Log($"[HeadshotTip] 配置加载完成，启用状态: {configManager.IsEnabled}");
+
+                // 初始化 Harmony
+                harmony = new Harmony(HARMONY_ID);
+
+                // 应用所有 Patch
+                harmony.PatchAll();
+                Debug.Log("[HeadshotTip] Harmony Patches 应用成功");
+
+                // 将配置管理器存储为静态引用，供 Patch 使用
+                HeadshotDetector.Initialize(configManager);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[HeadshotTip] 初始化失败: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
+
+        void OnDestroy()
+        {
+            try
+            {
+                // 清理 Harmony patches
+                if (harmony != null)
+                {
+                    harmony.UnpatchAll(HARMONY_ID);
+                    Debug.Log("[HeadshotTip] Harmony Patches 已清理");
+                }
+
+                HeadshotDetector.Cleanup();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[HeadshotTip] 清理失败: {ex.Message}");
+            }
+
+            Debug.Log("=== HeadshotTip Mod 已卸载 ===");
+        }
+    }
+
+    /// <summary>
+    /// 爆头检测器 - 使用 Harmony Patch 检测爆头击杀
+    /// </summary>
+    public static class HeadshotDetector
+    {
+        private static ConfigManager config;
+
+        public static void Initialize(ConfigManager configManager)
+        {
+            config = configManager;
+        }
+
+        public static void Cleanup()
+        {
+            config = null;
+        }
+
+        /// <summary>
+        /// 显示爆头提示
+        /// </summary>
+        private static async void ShowHeadshotTip(Transform enemyTransform)
+        {
+            if (config == null || !config.IsEnabled)
+                return;
+
+            if (enemyTransform == null)
+            {
+                Debug.LogWarning("[HeadshotTip] 敌人 Transform 为空，无法显示提示");
+                return;
+            }
+
+            try
+            {
+                string message = config.GetRandomMessage();
+                float duration = config.Duration;
+                float yOffset = config.YOffset;
+
+                Debug.Log($"[HeadshotTip] 显示爆头提示: {message}");
+
+                // 显示气泡对话框
+                await DialogueBubblesManager.Show(
+                    text: message,
+                    target: enemyTransform,
+                    yOffset: yOffset,
+                    needInteraction: false,
+                    skippable: true,
+                    speed: -1,
+                    duration: duration
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[HeadshotTip] 显示提示失败: {ex.Message}");
+            }
+        }
+
+        // ===== Harmony Patches =====
+        // 注意：以下 Patch 可能需要根据实际游戏代码调整
+        // 如果游戏更新或方法签名改变，需要相应修改
+
+        /// <summary>
+        /// Patch 方案 1: Hook CharacterMainControl 的死亡相关方法
+        /// 这是最常见的击杀检测点
+        /// 注意：需要根据实际反编译结果调整方法名和参数
+        /// </summary>
+        [HarmonyPatch]
+        public static class CharacterMainControl_Death_Patch
+        {
+            // TODO: 反编译游戏代码后，替换为实际的方法名
+            // 可能的方法名: OnDeath, Die, HandleDeath, OnKilled 等
+
+            /*
+            [HarmonyPatch(typeof(CharacterMainControl), "OnDeath")]
+            [HarmonyPostfix]
+            static void Postfix(CharacterMainControl __instance, DamageInfo damageInfo)
+            {
+                try
+                {
+                    // 检查是否为爆头击杀
+                    if (damageInfo != null && damageInfo.isHeadshot)
+                    {
+                        ShowHeadshotTip(__instance.transform);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[HeadshotTip] CharacterDeath Patch 错误: {ex.Message}");
+                }
+            }
+            */
+        }
+
+        /// <summary>
+        /// Patch 方案 2: Hook Health 或 DamageSystem 的伤害方法
+        /// 备选方案，在角色受伤时检测
+        /// </summary>
+        [HarmonyPatch]
+        public static class DamageSystem_Patch
+        {
+            // TODO: 根据反编译结果填写实际类型和方法
+
+            /*
+            [HarmonyPatch(typeof(Health), "TakeDamage")]
+            [HarmonyPostfix]
+            static void Postfix(Health __instance, float damage, bool isHeadshot, Transform attacker)
+            {
+                try
+                {
+                    // 检查是否死亡且为爆头
+                    if (__instance.IsDead && isHeadshot)
+                    {
+                        ShowHeadshotTip(__instance.transform);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[HeadshotTip] DamageSystem Patch 错误: {ex.Message}");
+                }
+            }
+            */
+        }
+
+        /// <summary>
+        /// Patch 方案 3: Hook 击杀统计或事件系统
+        /// 如果游戏有击杀统计系统，可以在此处检测
+        /// </summary>
+        [HarmonyPatch]
+        public static class KillStatistics_Patch
+        {
+            // TODO: 查找游戏中的击杀统计相关类
+
+            /*
+            [HarmonyPatch(typeof(KillTracker), "RegisterKill")]
+            [HarmonyPostfix]
+            static void Postfix(KillType killType, Transform victim)
+            {
+                try
+                {
+                    if (killType == KillType.Headshot)
+                    {
+                        ShowHeadshotTip(victim);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"[HeadshotTip] KillStatistics Patch 错误: {ex.Message}");
+                }
+            }
+            */
+        }
+
+        // ===== 临时测试用 Patch =====
+        // 用于测试 mod 是否正常加载和运行
+        // 开发完成后可以删除
+
+        /// <summary>
+        /// 测试 Patch: 监听任何角色死亡事件（用于调试）
+        /// 注意：这个 Patch 用于测试，实际使用时需要替换为真实的爆头检测逻辑
+        /// </summary>
+        /*
+        [HarmonyPatch(typeof(CharacterMainControl), "Update")]
+        [HarmonyPostfix]
+        static void TestPatch(CharacterMainControl __instance)
+        {
+            // 测试：按下 F8 键显示测试提示
+            if (Input.GetKeyDown(KeyCode.F8))
+            {
+                Debug.Log("[HeadshotTip] 测试键按下，显示测试提示");
+                ShowHeadshotTip(__instance.transform);
+            }
+        }
+        */
+    }
+}
+
+/*
+=== 开发说明 ===
+
+这个 Mod 需要根据游戏的实际代码结构进行调整。当前代码提供了框架和多个可能的 Hook 点。
+
+下一步工作：
+1. 使用 ILSpy 或 dnSpy 反编译游戏的 DLL 文件（特别是 TeamSoda.*.dll）
+2. 查找以下相关类和方法：
+   - CharacterMainControl 类的死亡相关方法
+   - Health 或 DamageSystem 类的伤害处理方法
+   - 检查是否有 DamageInfo 或类似结构包含爆头信息
+3. 根据实际找到的方法，取消注释并修改对应的 Patch
+4. 编译并测试
+
+调试技巧：
+1. 查看游戏日志文件：C:\Users\{用户名}\AppData\LocalLow\TeamSoda\Duckov\Player.log
+2. 使用测试 Patch（按 F8 键）验证 mod 基本功能是否正常
+3. 逐步启用真实的 Patch，观察日志输出
+
+如果找不到爆头相关的参数，可以考虑：
+- Hook 伤害方法，检查伤害来源部位（HitBox/BodyPart）
+- Hook 死亡方法，检查最后一次伤害记录
+- 查找游戏是否有 Achievement 或 Statistics 系统记录爆头击杀
+*/

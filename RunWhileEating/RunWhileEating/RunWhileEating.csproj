@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Nullable>enable</Nullable>
+        <IsMac>false</IsMac>
+        <IsMac Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'">true</IsMac>
+
+        <!-- For Windows users, please fill the folder path which contains Duckov.exe below -->
+        <!-- Windows 用户请在下面这行填写你的鸭科夫安装路径（包含 Duckov.exe 的目录），这样编译器就能找到相关的 dll 文件 -->
+        <DuckovPath>e:\Downloads\逃离鸭科夫Escape From Duckov-v1.0.26+MOD整理\EscapeFD</DuckovPath>
+
+        <!-- For Mac users, please fill the folder path which contains Duckov.app below -->
+        <!-- Mac 用户请在下面这行填写你的鸭科夫安装路径（包含 Duckov.app 的目录）-->
+        <DuckovPath Condition="'$(IsMac)'">/Users/Somebody/Library/Application Support/Steam/steamapps/common/Escape from Duckov</DuckovPath>
+
+        <SubPath>\Duckov_Data\Managed\</SubPath>
+        <SubPath Condition="'$(IsMac)'">/Duckov.app/Contents/Resources/Data/Managed/</SubPath>
+
+        <!-- Output to ReleaseExample folder -->
+        <OutputPath>ReleaseExample\RunWhileEating\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Harmony for runtime patching -->
+        <PackageReference Include="Lib.Harmony" Version="2.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="$(DuckovPath)$(SubPath)TeamSoda.*">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(DuckovPath)$(SubPath)ItemStatsSystem.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(DuckovPath)$(SubPath)Unity*">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(DuckovPath)$(SubPath)UniTask.dll">
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+
+    <!-- Auto-copy dependencies to output folder -->
+    <Target Name="CopyDependencies" AfterTargets="Build">
+        <ItemGroup>
+            <HarmonyDll Include="$(NuGetPackageRoot)lib.harmony\2.4.1\lib\net472\0Harmony.dll" />
+        </ItemGroup>
+        <Copy SourceFiles="@(HarmonyDll)" DestinationFolder="$(OutputPath)" />
+        <Message Text="✓ 已复制 Harmony DLL 到输出文件夹" Importance="high" />
+    </Target>
+</Project>

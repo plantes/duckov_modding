@@ -1,0 +1,11 @@
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\obj\Release\RunWhileEating.csproj.AssemblyReference.cache
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\obj\Release\RunWhileEating.GeneratedMSBuildEditorConfig.editorconfig
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\obj\Release\RunWhileEating.AssemblyInfoInputs.cache
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\obj\Release\RunWhileEating.AssemblyInfo.cs
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\obj\Release\RunWhileEating.csproj.CoreCompileInputs.cache
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\obj\Release\RunWhileEating.sourcelink.json
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\ReleaseExample\RunWhileEating\RunWhileEating.deps.json
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\ReleaseExample\RunWhileEating\RunWhileEating.dll
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\ReleaseExample\RunWhileEating\RunWhileEating.pdb
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\obj\Release\RunWhileEating.dll
+E:\work\0duckov_modding\RunWhileEating\RunWhileEating\obj\Release\RunWhileEating.pdb
